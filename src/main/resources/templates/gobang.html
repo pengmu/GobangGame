@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gobang AI</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="js/lib/jquery-3.2.1.min.js"></script>
+    <script src="js/lib/sockjs.min.js"></script>
+    <script src="js/lib/stomp.js"></script>
+    <script src="js/src/gobang_board.js"></script> 
+    <script src="js/src/websockClient.js"></script> 
+    <script src="js/src/message.js"></script>
+    <script src="js/src/piece.js"></script>    
+    <script type="text/javascript">
+        var board = null;
+        $(document).ready(function() {
+           initGame(false)
+			
+        });
+        
+        function initGame(playMode){
+        	 var uidx = document.getElementById("uidx").value;
+             var uidy = document.getElementById("uidy").value;
+             var gameId = document.getElementById("gameId").value;
+             console.log("initiate game "+gameId);
+        	 //connect to server
+            var webclient = new WebClient();
+        	if(board == null){ 
+           		var client = webclient.stompClient;	
+           		var subscriptionId = gameId+"_result";
+				client.connect({}, function(frame) {		
+					//console.log('player ['+uidx+'] Connected : ' + frame);
+					client.subscribe("/user/queue/playerMove",function(result){
+						var winning = JSON.parse(result.body).win;
+						var uid = JSON.parse(result.body).uid;
+						//console.log("player id["+uid+"] wins["+winning+"]");
+						if(winning==true){
+							alert("player id["+uid+"] wins!  will reload game board...");
+							//location.reload();
+				 			board.initBoard(960,16,uidx,uidy,gameId,playMode);
+						}
+					},{id:subscriptionId})
+				},function(frame){
+					alert("Server Disconnected!");
+					location.reload();
+				});
+            	board = new Board(webclient);
+        	}
+           
+            
+            if(playMode){
+            	document.getElementById("nav").style.display="none";
+            	 board.initBoard(960,16,uidx,uidy,gameId,true);
+            }else{
+            	document.getElementById("nav").style.display="inline";
+            	board.initBoard(960,16,uidx,uidy,gameId,false);
+            }
+           
+        }
+        
+        function loadHistorySet(){
+        	var setNum = document.getElementById('set').value;
+        	var gameId = document.getElementById("gameId").value;
+        	initGame(false);
+        	board.loadHistorySet(setNum,gameId);
+        	document.getElementById("nav").style.display="inline";
+        	
+        }
+        
+        function nextHistoryMove(){
+        	board.nextMove();
+        }
+        
+        
+        function resetGame(){
+        	if(board!=null){
+        		var uidx = document.getElementById("uidx").value;
+        		var uidy = document.getElementById("uidy").value;
+        		var gameId = document.getElementById("gameId").value;
+        		document.getElementById("nav").style.display="none";
+        		initGame(true);
+        		board.resetGame(gameId);
+        	}
+        }
+       
+    </script>
+</head>
+<body>
+	<input id="uidx" type="hidden" th:value="${uidX}"/>
+	<input id="uidy" type="hidden" th:value="${uidY}"/>
+	<input id="gameId" type="hidden" th:value="${gameId}"/>
+	<div>
+		<button type="button" onclick="loadHistorySet()">Load History Set</button> 
+  		<input  name="historySet" id="set" />
+  		<button type="button" onclick="resetGame()" style= "margin-left: 500px;">Play with AI</button>
+  	</div><br/>
+  	
+	<!-- 
+	<p id="uid" th:text="'UID_X ' + ${uidX} +  '   UID_Y '+${uidY}" />
+	 -->
+	 <div style="position: relative;">
+    	<canvas id="board" width="960" height="960" style="border: 2px solid #d3d3d3; position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+    	<canvas id="piece" width="960" height="960" style="border: 2px solid #d3d3d3; position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+
+    </div>
+    
+    <div id="nav" style="position: absolute; left: 420px; top: 60px; z-index: 2;">
+  			<button type="button" >Previous</button>
+    		<button type="button" onclick="nextHistoryMove()" style= "margin-left: 20px;">Next</button>
+  		</div>
+    <br/>
+   
+    <!--  
+    <canvas id="messageWindow" width="300" height="100"></canvas>
+    -->
+</body>
+</html>
