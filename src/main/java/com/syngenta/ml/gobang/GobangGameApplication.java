@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GobangGameApplication {
 
 	public static void main(String[] args) {
+		//this is a change
 		SpringApplication.run(GobangGameApplication.class, args);
 	}
 }
