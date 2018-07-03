@@ -121,28 +121,6 @@ public class GobangController implements ApplicationListener<ApplicationEvent> {
     	}
     	return result;
     }
-    /*
-    @MessageMapping("/historyMove")
-    @SendToUser
-    public HistoryMove historyMove(SimpMessageHeaderAccessor headerAccessor) throws Exception{
-    	String sessionId = headerAccessor.getSessionId();
-    	GobangBoard board = gameBoards.get(sessionId);
-    	HistoryMove move = new HistoryMove();
-    	if(board.getHistoryMoveIndex()%2 == 0){
-    		move.setPlayer("RED");
-    	}else{
-    		move.setPlayer("BLACK");
-    	}
-    	if(board!=null){
-    		short[] nextMove = board.nextHistoryMove();
-    		move.setGridX(nextMove[0]);
-    		move.setGridY(nextMove[1]);
-    		logger.info("next move: "+move.getGridX()+"  "+move.getGridY());
-    	}
-    	
-    	return move;
-    }
-    */
     
     @MessageMapping("/loadSet")
     @SendToUser

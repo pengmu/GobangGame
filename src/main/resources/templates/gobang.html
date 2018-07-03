@@ -12,8 +12,10 @@
     <script src="js/src/piece.js"></script>    
     <script type="text/javascript">
         var board = null;
+        var boardSize = 720;
+        var gridNum = 16;
         $(document).ready(function() {
-           initGame(false)
+           initGame(true)
 			
         });
         
@@ -37,7 +39,7 @@
 						if(winning==true){
 							alert("player id["+uid+"] wins!  will reload game board...");
 							//location.reload();
-				 			board.initBoard(960,16,uidx,uidy,gameId,playMode);
+				 			board.initBoard(boardSize,gridNum,uidx,uidy,gameId,playMode);
 						}
 					},{id:resultSubscriptionId});
 					
@@ -61,10 +63,10 @@
             
             if(playMode){
             	document.getElementById("nav").style.display="none";
-            	 board.initBoard(960,16,uidx,uidy,gameId,true);
+            	 board.initBoard(boardSize,gridNum,uidx,uidy,gameId,true);
             }else{
             	document.getElementById("nav").style.display="inline";
-            	board.initBoard(960,16,uidx,uidy,gameId,false);
+            	board.initBoard(boardSize,gridNum,uidx,uidy,gameId,false);
             }
            
         }
@@ -100,22 +102,22 @@
 	<input id="uidx" type="hidden" th:value="${uidX}"/>
 	<input id="uidy" type="hidden" th:value="${uidY}"/>
 	<input id="gameId" type="hidden" th:value="${gameId}"/>
-	<div>
-		<button type="button" onclick="loadHistorySet()">Load History Set</button> 
-  		<input  name="historySet" id="set" />
-  		<button type="button" onclick="resetGame()" style= "margin-left: 500px;">Play with AI</button>
-  	</div><br/>
   	
 	<!-- 
 	<p id="uid" th:text="'UID_X ' + ${uidX} +  '   UID_Y '+${uidY}" />
 	 -->
-	 <div style="position: relative;">
-    	<canvas id="board" width="960" height="960" style="border: 2px solid #d3d3d3; position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
-    	<canvas id="piece" width="960" height="960" style="border: 2px solid #d3d3d3; position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+	 <div style="text-align:center">
+    	<canvas id="board" width="720" height="720" style="border: 8px solid #d3d3d3; position: absolute; left: 300px; top: 0; z-index: 0;"></canvas>
+    	<canvas id="piece" width="720" height="720" style="border: 8px solid #d3d3d3; position: absolute; left: 300px; top: 0; z-index: 1;"></canvas>
 
     </div>
+    <div style="position: relative; top: 5px; z-index: 2;">
+		<button type="button" onclick="loadHistorySet()" style= "margin-left:350px;">Load History Set</button> 
+  		<input  name="historySet" id="set" size="4" />
+  		<button type="button" onclick="resetGame()" style= "margin-left: 320px;">Play with AI</button>
+  	</div>
     
-    <div id="nav" style="position: absolute; left: 420px; top: 60px; z-index: 2;">
+    <div id="nav" style="position: relative; left: 600px; top: 670px; z-index: 2; display: none;">
   			<button type="button" >Previous</button>
     		<button type="button" onclick="nextHistoryMove()" style= "margin-left: 20px;">Next</button>
   		</div>
