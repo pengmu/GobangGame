@@ -36,8 +36,8 @@ public class GobangController implements ApplicationListener<ApplicationEvent> {
 	private static ArrayList<String> blackWin = new ArrayList<String>();
 	static {
 		//initialize redWin set
-		File dataFile1 = new File("C:/Syngenta/training/ML/gobang_data/tmp/BlackWin.sgf");
-		File dataFile2 = new File("C:/Syngenta/training/ML/gobang_data/tmp/WhiteWin.sgf");
+		File dataFile1 = new File("data/BlackWin.sgf");
+		File dataFile2 = new File("data/WhiteWin.sgf");
 		try {
 			Files.lines(dataFile1.toPath(), Charset.forName("GB18030")).map(s -> s.trim())
 			.forEach(
@@ -54,7 +54,7 @@ public class GobangController implements ApplicationListener<ApplicationEvent> {
 	}
     private HashMap<String, GobangBoard> gameBoards = new HashMap<String, GobangBoard>();
 	
-	@RequestMapping("/gobang")
+	@RequestMapping("/")
     public String gobang(Model model) {
 		
     	Random r = new Random();
