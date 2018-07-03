@@ -44,6 +44,7 @@ class Board {
 	
 	this.drawBoard(ctx,gridNum,boardSize);
 	
+	
 	if(playMode){
 		c.addEventListener('mousedown',function(evt){
 			var mousePos = getMousePos(c,evt);
@@ -166,19 +167,12 @@ class Board {
  
  loadHistorySet(setNum,gameId){
 	var board = this;
-	var subscriptionId = gameId+"_history";
 	if(setNum>0){	
 		//console.log("load set "+setNum+" for game "+gameId);
 		board.webClient.stompClient.send("/gobang/loadSet", {}, 
 	            JSON.stringify({'setNum':setNum,'gameId':gameId}));
 		
-		board.webClient.stompClient.subscribe("/user/queue/loadSet",function(historySet){
-			var moves = JSON.parse(historySet.body).moves;			
-			board.historyMove = moves.split(";");
-			board.historyMoveInd = 0;
-			console.log("history moves : "+board.historyMove);
-			
-		},{id:subscriptionId})
+		
 	}	
 	
  }

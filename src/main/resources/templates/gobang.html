@@ -26,7 +26,8 @@
             var webclient = new WebClient();
         	if(board == null){ 
            		var client = webclient.stompClient;	
-           		var subscriptionId = gameId+"_result";
+           		var resultSubscriptionId = gameId+"_result";
+           		var hisotrySubscriptionId = gameId+"_history";
 				client.connect({}, function(frame) {		
 					//console.log('player ['+uidx+'] Connected : ' + frame);
 					client.subscribe("/user/queue/playerMove",function(result){
@@ -38,7 +39,18 @@
 							//location.reload();
 				 			board.initBoard(960,16,uidx,uidy,gameId,playMode);
 						}
-					},{id:subscriptionId})
+					},{id:resultSubscriptionId});
+					
+					
+					
+					client.subscribe("/user/queue/loadSet",function(historySet){
+						var moves = JSON.parse(historySet.body).moves;			
+						board.historyMove = moves.split(";");
+						board.historyMoveInd = 0;
+						console.log("history moves : "+board.historyMove);
+						
+					},{id:hisotrySubscriptionId})
+					
 				},function(frame){
 					alert("Server Disconnected!");
 					location.reload();
