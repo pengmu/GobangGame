@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -12,6 +13,13 @@ import java.util.Random;
 
 
 
+
+
+
+
+
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,9 +27,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -34,21 +46,22 @@ import com.syngenta.ml.gobang.board.*;
 @Controller
 public class GobangController implements ApplicationListener<ApplicationEvent> {
 	private static Logger logger = LoggerFactory.getLogger(GobangController.class);
-	private static ArrayList<String> redWin = new ArrayList<String>();
 	private static ArrayList<String> blackWin = new ArrayList<String>();
+	private static ArrayList<String> whiteWin = new ArrayList<String>();
+	private static ResourceLoader resourceLoader = new DefaultResourceLoader();
 	static {
 		
 		try {
-			//initialize redWin set
-			File dataFile1 = new ClassPathResource("static/data/BlackWin.sgf").getFile();
-			File dataFile2 = new ClassPathResource("static/data/WhiteWin.sgf").getFile();
-			Files.lines(dataFile1.toPath(), Charset.forName("GB18030")).map(s -> s.trim())
-			.forEach(
-					s->redWin.add(s)
-					);
-			Files.lines(dataFile2.toPath(), Charset.forName("GB18030")).map(s -> s.trim())
+			//initialize history set
+			InputStream data1 = resourceLoader.getResource("BlackWin.sgf").getInputStream();
+			InputStream data2  = resourceLoader.getResource("WhiteWin.sgf").getInputStream();
+			IOUtils.readLines(data1,Charset.forName("GB18030"))
 			.forEach(
 					s->blackWin.add(s)
+					);
+			IOUtils.readLines(data2,Charset.forName("GB18030"))
+			.forEach(
+					s->whiteWin.add(s)
 					);
 		} catch (IOException e) {
 			logger.error("Error :"+e);
@@ -141,9 +154,9 @@ public class GobangController implements ApplicationListener<ApplicationEvent> {
     	GobangBoard board = gameBoards.get(gameId);  	
     	if(board!=null){
     		board.clearBoard();
-    		historySet.setMoves(blackWin.get(setNum));
+    		historySet.setMoves(whiteWin.get(setNum));
     		logger.info("load history moves :"+historySet.getMoves());
-    		board.setHistorySet(blackWin.get(setNum));
+    		board.setHistorySet(whiteWin.get(setNum));
     	}
     	return historySet; 
     }
