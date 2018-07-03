@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -35,10 +37,11 @@ public class GobangController implements ApplicationListener<ApplicationEvent> {
 	private static ArrayList<String> redWin = new ArrayList<String>();
 	private static ArrayList<String> blackWin = new ArrayList<String>();
 	static {
-		//initialize redWin set
-		File dataFile1 = new File("data/BlackWin.sgf");
-		File dataFile2 = new File("data/WhiteWin.sgf");
+		
 		try {
+			//initialize redWin set
+			File dataFile1 = new ClassPathResource("static/data/BlackWin.sgf").getFile();
+			File dataFile2 = new ClassPathResource("static/data/WhiteWin.sgf").getFile();
 			Files.lines(dataFile1.toPath(), Charset.forName("GB18030")).map(s -> s.trim())
 			.forEach(
 					s->redWin.add(s)
